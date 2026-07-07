@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ecomarket
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres1234
+      POSTGRES_DB: bd_dylan_suarez_puerta_de_oro
+    ports:
+      - "5434:5432"
+    volumes:
+      # Scripts que se ejecutan solo en el primer arranque (crean y cargan la BD)
+      - ./sql:/docker-entrypoint-initdb.d
+      # Guarda los datos entre reinicios del contenedor
+      - ecomarket_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bd_dylan_suarez_puerta_de_oro"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ecomarket_data:
